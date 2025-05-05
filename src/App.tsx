@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Container, Typography, Box } from '@mui/material'
+import { Container, Typography, Box, Button } from '@mui/material'
 import { Calendar } from './components/Calendar'
 import { AddAccountForm } from './components/AddAccountForm'
 import { SocialMediaAccount, DailySchedule } from './types'
@@ -119,15 +119,34 @@ function App() {
     }))
   }
 
+  const handleClearAllPostTitles = () => {
+    setWeeklySchedule(prev => prev.map(daySchedule => ({
+      ...daySchedule,
+      accounts: daySchedule.accounts.map(account => ({
+        ...account,
+        posts: account.posts.map(post => ({
+          ...post,
+          content: ''
+        }))
+      }))
+    })));
+  };
+
   return (
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Social Media Content Calendar
         </Typography>
-        
         <AddAccountForm onAddAccount={handleAddAccount} />
-        
+        <Button
+          variant="outlined"
+          color="warning"
+          sx={{ mb: 2 }}
+          onClick={handleClearAllPostTitles}
+        >
+          Clear All Post Titles
+        </Button>
         <Calendar
           accounts={accounts}
           weeklySchedule={weeklySchedule}

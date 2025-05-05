@@ -10,7 +10,11 @@ import {
   Typography,
   Paper,
   SelectChangeEvent,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { SocialMediaAccount } from '../types';
 
 interface AddAccountFormProps {
@@ -111,109 +115,116 @@ export const AddAccountForm: React.FC<AddAccountFormProps> = ({ onAddAccount }) 
   };
 
   return (
-    <Paper sx={{ p: 3, mb: 3 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>Add New Account</Typography>
-      <Box component="form" onSubmit={handleSubmit}>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Platform</InputLabel>
-          <Select
-            name="platform"
-            value={formData.platform}
-            label="Platform"
-            onChange={handleSelectChange}
-            required
-          >
-            <MenuItem value="TikTok">TikTok</MenuItem>
-            <MenuItem value="Instagram">Instagram</MenuItem>
-          </Select>
-        </FormControl>
+    <Accordion sx={{ mb: 3 }}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography variant="h6">Add New Account</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Paper sx={{ p: 3 }} elevation={0}>
+          <Box component="form" onSubmit={handleSubmit}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Platform</InputLabel>
+              <Select
+                name="platform"
+                value={formData.platform}
+                label="Platform"
+                onChange={handleSelectChange}
+                required
+              >
+                <MenuItem value="TikTok">TikTok</MenuItem>
+                <MenuItem value="Instagram">Instagram</MenuItem>
+                <MenuItem value="Tiktok + Instagram">Tiktok + Instagram</MenuItem>
+              </Select>
+            </FormControl>
 
-        <TextField
-          fullWidth
-          label="Username"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
+            <TextField
+              fullWidth
+              label="Username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
 
-        <TextField
-          fullWidth
-          label="Phone Device"
-          name="phoneDevice"
-          value={formData.phoneDevice}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
+            <TextField
+              fullWidth
+              label="Phone Device"
+              name="phoneDevice"
+              value={formData.phoneDevice}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
 
-        <TextField
-          fullWidth
-          label="Monthly Earnings"
-          name="monthlyEarnings"
-          type="number"
-          value={formData.monthlyEarnings}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
+            <TextField
+              fullWidth
+              label="Monthly Earnings"
+              name="monthlyEarnings"
+              type="number"
+              value={formData.monthlyEarnings}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
 
-        <TextField
-          fullWidth
-          label="Posts Per Day"
-          name="postsPerDay"
-          type="number"
-          value={formData.postsPerDay}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
+            <TextField
+              fullWidth
+              label="Posts Per Day"
+              name="postsPerDay"
+              type="number"
+              value={formData.postsPerDay}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
 
-        <Typography variant="subtitle1" sx={{ mb: 2 }}>Contact Information</Typography>
+            <Typography variant="subtitle1" sx={{ mb: 2 }}>Contact Information</Typography>
 
-        <TextField
-          fullWidth
-          label="Contact Name"
-          name="contactName"
-          value={formData.contactName}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
+            <TextField
+              fullWidth
+              label="Contact Name"
+              name="contactName"
+              value={formData.contactName}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
 
-        <TextField
-          fullWidth
-          label="Contact Email"
-          name="contactEmail"
-          type="email"
-          value={formData.contactEmail}
-          onChange={handleChange}
-          error={!!errors.contactEmail}
-          helperText={errors.contactEmail}
-          sx={{ mb: 2 }}
-        />
+            <TextField
+              fullWidth
+              label="Contact Email"
+              name="contactEmail"
+              type="email"
+              value={formData.contactEmail}
+              onChange={handleChange}
+              error={!!errors.contactEmail}
+              helperText={errors.contactEmail}
+              sx={{ mb: 2 }}
+            />
 
-        <TextField
-          fullWidth
-          label="Contact Phone"
-          name="contactPhone"
-          value={formData.contactPhone}
-          onChange={handleChange}
-          error={!!errors.contactPhone}
-          helperText={errors.contactPhone}
-          sx={{ mb: 2 }}
-        />
+            <TextField
+              fullWidth
+              label="Contact Phone"
+              name="contactPhone"
+              value={formData.contactPhone}
+              onChange={handleChange}
+              error={!!errors.contactPhone}
+              helperText={errors.contactPhone}
+              sx={{ mb: 2 }}
+            />
 
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-        >
-          Add Account
-        </Button>
-      </Box>
-    </Paper>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+            >
+              Add Account
+            </Button>
+          </Box>
+        </Paper>
+      </AccordionDetails>
+    </Accordion>
   );
 }; 
