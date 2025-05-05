@@ -17,6 +17,8 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  Chip,
+  FormControlLabel,
 } from '@mui/material';
 import { DailySchedule, SocialMediaAccount } from '../types';
 import EditIcon from '@mui/icons-material/Edit';
@@ -29,6 +31,7 @@ interface CalendarProps {
   onUpdateContent: (day: string, accountId: string, postId: string, newContent: string) => void;
   onTogglePost: (day: string, accountId: string, postId: string) => void;
   onDeleteAccount: (accountId: string) => void;
+  onUpdateHashtags: (accountId: string, newHashtags: string[]) => void;
 }
 
 export const Calendar: React.FC<CalendarProps> = ({ 
@@ -36,10 +39,15 @@ export const Calendar: React.FC<CalendarProps> = ({
   weeklySchedule, 
   onUpdateContent,
   onTogglePost,
-  onDeleteAccount
+  onDeleteAccount,
+  onUpdateHashtags
 }) => {
   const [editingCell, setEditingCell] = useState<{ day: string; accountId: string; postId: string } | null>(null);
   const [editedContent, setEditedContent] = useState('');
+
+  // Manage hashtag input and addAnother state per account
+  const [hashtagInputs, setHashtagInputs] = useState<{ [accountId: string]: string }>({});
+  const [addAnother, setAddAnother] = useState<{ [accountId: string]: boolean }>({});
 
   const calculateTotalMonthlyEarnings = () => {
     return accounts.reduce((total, account) => total + account.monthlyEarnings, 0);
@@ -78,6 +86,14 @@ export const Calendar: React.FC<CalendarProps> = ({
                 }}
               >
                 Account
+              </TableCell>
+              <TableCell
+                sx={{
+                  borderRight: '1px solid rgba(224, 224, 224, 1)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                }}
+              >
+                Hashtags
               </TableCell>
               <TableCell 
                 sx={{ 
@@ -135,132 +151,172 @@ export const Calendar: React.FC<CalendarProps> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {accounts.map((account) => (
-              <TableRow key={account.id}>
-                <TableCell 
-                  sx={{ 
-                    borderRight: '1px solid rgba(224, 224, 224, 1)',
-                  }}
-                >
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {account.username}
-                      <Tooltip title="Delete Account">
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() => onDeleteAccount(account.id)}
-                          sx={{ ml: 1 }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
+            {accounts.map((account) => {
+              return (
+                <TableRow key={account.id}>
+                  <TableCell 
+                    sx={{ 
+                      borderRight: '1px solid rgba(224, 224, 224, 1)',
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {account.username}
+                        <Tooltip title="Delete Account">
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => onDeleteAccount(account.id)}
+                            sx={{ ml: 1 }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
+                        {account.contact.email || account.contact.phone}
+                      </Typography>
                     </Box>
-                    <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
-                      {account.contact.email || account.contact.phone}
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell 
-                  sx={{ 
-                    borderRight: '1px solid rgba(224, 224, 224, 1)',
-                  }}
-                >
-                  {account.platform}
-                </TableCell>
-                <TableCell 
-                  sx={{ 
-                    borderRight: '1px solid rgba(224, 224, 224, 1)',
-                  }}
-                >
-                  {account.phoneDevice}
-                </TableCell>
-                <TableCell 
-                  sx={{ 
-                    borderRight: '1px solid rgba(224, 224, 224, 1)',
-                  }}
-                >
-                  {account.postsPerDay}
-                </TableCell>
-                {weeklySchedule.map((day, index) => {
-                  const posts = getPostsForDay(day.day, account.id);
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      borderRight: '1px solid rgba(224, 224, 224, 1)',
+                      minWidth: 180,
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
+                      {account.hashtags.map((tag, idx) => (
+                        <Chip
+                          key={tag + idx}
+                          label={tag}
+                          onDelete={() => {
+                            const newTags = account.hashtags.filter((_, i) => i !== idx);
+                            onUpdateHashtags(account.id, newTags);
+                          }}
+                          size="small"
+                          color="primary"
+                        />
+                      ))}
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <TextField
+                        size="small"
+                        value={hashtagInputs[account.id] || ''}
+                        onChange={e => setHashtagInputs(inputs => ({ ...inputs, [account.id]: e.target.value }))}
+                        placeholder="#hashtag"
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && (hashtagInputs[account.id] || '').trim()) {
+                            const newTags = [...account.hashtags, (hashtagInputs[account.id] || '').trim()];
+                            onUpdateHashtags(account.id, newTags);
+                            setHashtagInputs(inputs => ({ ...inputs, [account.id]: '' }));
+                            e.preventDefault();
+                          }
+                        }}
+                        sx={{ minWidth: 100 }}
+                      />
+                    </Box>
+                  </TableCell>
+                  <TableCell 
+                    sx={{ 
+                      borderRight: '1px solid rgba(224, 224, 224, 1)',
+                    }}
+                  >
+                    {account.platform}
+                  </TableCell>
+                  <TableCell 
+                    sx={{ 
+                      borderRight: '1px solid rgba(224, 224, 224, 1)',
+                    }}
+                  >
+                    {account.phoneDevice}
+                  </TableCell>
+                  <TableCell 
+                    sx={{ 
+                      borderRight: '1px solid rgba(224, 224, 224, 1)',
+                    }}
+                  >
+                    {account.postsPerDay}
+                  </TableCell>
+                  {weeklySchedule.map((day, index) => {
+                    const posts = getPostsForDay(day.day, account.id);
 
-                  return (
-                    <TableCell 
-                      key={`${day.day}-${account.id}`}
-                      sx={{ 
-                        minWidth: '200px',
-                        height: '200px',
-                        position: 'relative',
-                        borderRight: index < weeklySchedule.length - 1 ? '1px solid rgba(224, 224, 224, 1)' : 'none',
-                      }}
-                    >
-                      <List dense>
-                        {posts.map((post, index) => {
-                          const isEditing = editingCell?.day === day.day && 
-                                         editingCell?.accountId === account.id &&
-                                         editingCell?.postId === post.id;
+                    return (
+                      <TableCell 
+                        key={`${day.day}-${account.id}`}
+                        sx={{ 
+                          minWidth: '200px',
+                          height: '200px',
+                          position: 'relative',
+                          borderRight: index < weeklySchedule.length - 1 ? '1px solid rgba(224, 224, 224, 1)' : 'none',
+                        }}
+                      >
+                        <List dense>
+                          {posts.map((post, index) => {
+                            const isEditing = editingCell?.day === day.day && 
+                                           editingCell?.accountId === account.id &&
+                                           editingCell?.postId === post.id;
 
-                          return (
-                            <ListItem
-                              key={post.id}
-                              sx={{
-                                textDecoration: post.completed ? 'line-through' : 'none',
-                                opacity: post.completed ? 0.7 : 1,
-                              }}
-                            >
-                              {isEditing ? (
-                                <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-                                  <TextField
-                                    fullWidth
-                                    value={editedContent}
-                                    onChange={(e) => setEditedContent(e.target.value)}
-                                    size="small"
-                                  />
-                                  <IconButton
-                                    onClick={handleSaveClick}
-                                    color="primary"
-                                    size="small"
-                                  >
-                                    <SaveIcon />
-                                  </IconButton>
-                                </Box>
-                              ) : (
-                                <>
-                                  <ListItemText 
-                                    primary={`Post ${index + 1}`}
-                                    secondary={post.content}
-                                    sx={{ pr: 7 }}
-                                    secondaryTypographyProps={{
-                                      style: { wordBreak: 'break-word', whiteSpace: 'pre-line' },
-                                      noWrap: false,
-                                    }}
-                                  />
-                                  <ListItemSecondaryAction>
-                                    <Checkbox
-                                      edge="end"
-                                      checked={post.completed}
-                                      onChange={() => onTogglePost(day.day, account.id, post.id)}
+                            return (
+                              <ListItem
+                                key={post.id}
+                                sx={{
+                                  textDecoration: post.completed ? 'line-through' : 'none',
+                                  opacity: post.completed ? 0.7 : 1,
+                                }}
+                              >
+                                {isEditing ? (
+                                  <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+                                    <TextField
+                                      fullWidth
+                                      value={editedContent}
+                                      onChange={(e) => setEditedContent(e.target.value)}
+                                      size="small"
                                     />
                                     <IconButton
-                                      edge="end"
-                                      onClick={() => handleEditClick(day.day, account.id, post.id, post.content)}
+                                      onClick={handleSaveClick}
+                                      color="primary"
                                       size="small"
                                     >
-                                      <EditIcon />
+                                      <SaveIcon />
                                     </IconButton>
-                                  </ListItemSecondaryAction>
-                                </>
-                              )}
-                            </ListItem>
-                          );
-                        })}
-                      </List>
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
+                                  </Box>
+                                ) : (
+                                  <>
+                                    <ListItemText 
+                                      primary={`Post ${index + 1}`}
+                                      secondary={post.content}
+                                      sx={{ pr: 7 }}
+                                      secondaryTypographyProps={{
+                                        style: { wordBreak: 'break-word', whiteSpace: 'pre-line' },
+                                        noWrap: false,
+                                      }}
+                                    />
+                                    <ListItemSecondaryAction>
+                                      <Checkbox
+                                        edge="end"
+                                        checked={post.completed}
+                                        onChange={() => onTogglePost(day.day, account.id, post.id)}
+                                      />
+                                      <IconButton
+                                        edge="end"
+                                        onClick={() => handleEditClick(day.day, account.id, post.id, post.content)}
+                                        size="small"
+                                      >
+                                        <EditIcon />
+                                      </IconButton>
+                                    </ListItemSecondaryAction>
+                                  </>
+                                )}
+                              </ListItem>
+                            );
+                          })}
+                        </List>
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

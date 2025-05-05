@@ -20,7 +20,19 @@ function App() {
   useEffect(() => {
     const savedAccounts = localStorage.getItem('accounts');
     const savedSchedule = localStorage.getItem('weeklySchedule');
-    if (savedAccounts) setAccounts(JSON.parse(savedAccounts));
+    if (savedAccounts) {
+      const parsed = JSON.parse(savedAccounts);
+      // Migrate hashtags from string to array if needed
+      const migrated = parsed.map((acc: any) => ({
+        ...acc,
+        hashtags: Array.isArray(acc.hashtags)
+          ? acc.hashtags
+          : acc.hashtags
+          ? acc.hashtags.split(' ').filter((tag: string) => tag.trim() !== '')
+          : [],
+      }));
+      setAccounts(migrated);
+    }
     if (savedSchedule) setWeeklySchedule(JSON.parse(savedSchedule));
   }, []);
 
@@ -132,6 +144,12 @@ function App() {
     })));
   };
 
+  const handleUpdateHashtags = (accountId: string, newHashtags: string[]) => {
+    setAccounts(prev => prev.map(account =>
+      account.id === accountId ? { ...account, hashtags: newHashtags } : account
+    ));
+  };
+
   return (
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
@@ -153,6 +171,7 @@ function App() {
           onUpdateContent={handleUpdateContent}
           onTogglePost={handleTogglePost}
           onDeleteAccount={handleDeleteAccount}
+          onUpdateHashtags={handleUpdateHashtags}
         />
       </Box>
     </Container>

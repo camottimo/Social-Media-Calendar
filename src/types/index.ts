@@ -6,12 +6,13 @@ export interface Contact {
 
 export interface SocialMediaAccount {
   id: string;
-  platform: 'TikTok' | 'Instagram';
+  platform: 'TikTok' | 'Instagram' | 'Tiktok + Instagram';
   username: string;
   phoneDevice: string;
   monthlyEarnings: number;
   contact: Contact;
   postsPerDay: number;
+  hashtags: string[];
 }
 
 export interface Post {

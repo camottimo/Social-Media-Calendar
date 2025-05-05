@@ -61,7 +61,7 @@ export const AddAccountForm: React.FC<AddAccountFormProps> = ({ onAddAccount }) 
     }
 
     const newAccount: Omit<SocialMediaAccount, 'id'> = {
-      platform: formData.platform as 'TikTok' | 'Instagram',
+      platform: formData.platform as 'TikTok' | 'Instagram' | 'Tiktok + Instagram',
       username: formData.username,
       phoneDevice: formData.phoneDevice,
       monthlyEarnings: parseFloat(formData.monthlyEarnings),
@@ -71,6 +71,7 @@ export const AddAccountForm: React.FC<AddAccountFormProps> = ({ onAddAccount }) 
         email: formData.contactEmail,
         phone: formData.contactPhone || undefined,
       },
+      hashtags: [],
     };
 
     onAddAccount(newAccount);
