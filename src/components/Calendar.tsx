@@ -18,7 +18,6 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Chip,
-  FormControlLabel,
 } from '@mui/material';
 import { DailySchedule, SocialMediaAccount } from '../types';
 import EditIcon from '@mui/icons-material/Edit';
@@ -45,9 +44,8 @@ export const Calendar: React.FC<CalendarProps> = ({
   const [editingCell, setEditingCell] = useState<{ day: string; accountId: string; postId: string } | null>(null);
   const [editedContent, setEditedContent] = useState('');
 
-  // Manage hashtag input and addAnother state per account
+  // Manage hashtag input state per account
   const [hashtagInputs, setHashtagInputs] = useState<{ [accountId: string]: string }>({});
-  const [addAnother, setAddAnother] = useState<{ [accountId: string]: boolean }>({});
 
   const calculateTotalMonthlyEarnings = () => {
     return accounts.reduce((total, account) => total + account.monthlyEarnings, 0);
