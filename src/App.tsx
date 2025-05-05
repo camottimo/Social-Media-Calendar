@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Container, Typography, Box } from '@mui/material'
 import { Calendar } from './components/Calendar'
 import { AddAccountForm } from './components/AddAccountForm'
-import { SocialMediaAccount, DailySchedule, Post } from './types'
+import { SocialMediaAccount, DailySchedule } from './types'
 
 function App() {
   const [accounts, setAccounts] = useState<SocialMediaAccount[]>([])

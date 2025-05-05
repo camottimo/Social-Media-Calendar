@@ -17,7 +17,6 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Divider,
 } from '@mui/material';
 import { DailySchedule, SocialMediaAccount } from '../types';
 import EditIcon from '@mui/icons-material/Edit';
@@ -41,10 +40,6 @@ export const Calendar: React.FC<CalendarProps> = ({
 }) => {
   const [editingCell, setEditingCell] = useState<{ day: string; accountId: string; postId: string } | null>(null);
   const [editedContent, setEditedContent] = useState('');
-
-  const getAccountDetails = (accountId: string) => {
-    return accounts.find(account => account.id === accountId);
-  };
 
   const calculateTotalMonthlyEarnings = () => {
     return accounts.reduce((total, account) => total + account.monthlyEarnings, 0);

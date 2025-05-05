@@ -10,9 +10,8 @@ import {
   Typography,
   Paper,
   SelectChangeEvent,
-  FormHelperText,
 } from '@mui/material';
-import { SocialMediaAccount, Contact } from '../types';
+import { SocialMediaAccount } from '../types';
 
 interface AddAccountFormProps {
   onAddAccount: (account: Omit<SocialMediaAccount, 'id'>) => void;
